@@ -1,0 +1,31 @@
+[project]
+name = "user-manager"
+version = "0.1.0"
+description = "User crud with and admin interface"
+authors = [
+    { name = "davidade300", email = "davidade.dev@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+]
+
+[tool.poetry]
+packages = [{ include = "user_manager", from = "src" }]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 80
+format.quote-style = "single"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.coverage.run]
+omit = [
+    "*/__init__.py"
+]
