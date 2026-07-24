@@ -16,3 +16,7 @@ class RoleAlreadyAssigned(DomainException):
 
 class DeactivatedUser(DomainException):
     pass
+
+
+class InsufficientPrivileges(DomainException):
+    pass
