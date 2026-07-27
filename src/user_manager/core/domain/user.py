@@ -39,11 +39,11 @@ class User:
         self.date_of_birth = date_of_birth
         self.password_hash = password_hash
         self.is_active = is_active
-        self._created_at = created_at
+        self._created_at: datetime = created_at
         self.updated_at = updated_at
         if not roles:
             raise UserMustHaveAtLeastOneRole('User must have at least one role')
-        self._roles = set(roles)
+        self._roles: set[UserRole] = set(roles)
 
     @property
     def created_at(self) -> datetime:

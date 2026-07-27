@@ -1,14 +1,14 @@
-from datetime import datetime, timezone, date
+from datetime import date, datetime, timezone
 from typing import Any
 from uuid import uuid4
 
 import pytest
 
+from user_manager.core.domain.user import User
 from user_manager.core.domain.user_role import UserRole
 
 
 @pytest.fixture
-
 def valid_user_data() -> dict[str, Any]:
     return {
         'id': uuid4(),
