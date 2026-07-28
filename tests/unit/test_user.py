@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from typing import Any
+from uuid import uuid4
 
 import pytest
 import time_machine
@@ -95,6 +96,15 @@ def test_granting_new_role_adds_it(valid_user_data) -> None:
     assert user.roles == {UserRole.USER, UserRole.ADMIN}
 
 
+def test_granting_role_to_deactivated_user_raises_error(
+    valid_user_data,
+) -> None:
+    user: User = make_user(valid_user_data)
+    user.deactivate()
+    with pytest.raises(DeactivatedUser):
+        user.grant_role(UserRole.ADMIN)
+
+
 def test_user_repr_doesnt_contain_password_hash(valid_user_data) -> None:
     user: User = make_user(valid_user_data)
 
@@ -134,3 +144,38 @@ def test__touch_updates_updated_at(valid_user_data) -> None:
         user.grant_role(UserRole.ADMIN)
 
     assert user.updated_at.timestamp() == traveller.destination_timestamp
+
+
+def test_revoke_role_works_on_deactivated_user(valid_user_data) -> None:
+    user: User = make_user(valid_user_data)
+    user.grant_role(UserRole.ADMIN)
+    user.deactivate()
+    user.revoke_role(UserRole.ADMIN)
+
+    assert user.roles == {UserRole.USER}
+
+
+def test_users_with_same_id_are_equal(valid_user_data) -> None:
+    user: User = User(**valid_user_data)
+    same_id_user: User = User(**{**valid_user_data, 'full_name': 'Other Name'})
+
+    assert user == same_id_user
+
+
+def test_users_with_different_id_are_not_equal(valid_user_data) -> None:
+    user: User = User(**valid_user_data)
+    other_user: User = User(**{**valid_user_data, 'id': uuid4()})
+
+    assert user != other_user
+
+
+def test_is_admin_true_when_user_has_admin_role(valid_user_data) -> None:
+    user: User = make_user(valid_user_data, roles={UserRole.ADMIN})
+
+    assert user.is_admin() is True
+
+
+def test_is_admin_false_when_user_lacks_admin_role(valid_user_data) -> None:
+    user: User = make_user(valid_user_data)
+
+    assert user.is_admin() is False

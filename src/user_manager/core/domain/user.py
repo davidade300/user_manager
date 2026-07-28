@@ -50,9 +50,7 @@ class User:
         """The user's creation timestamp.
 
         Returns:
-            The datetime the user was created. A rich domain type
-            (``datetime``) is used deliberately; converting to a string is a
-            boundary/serialization concern handled by the adapters.
+            The datetime the user was created.
         """
         return self._created_at
 
@@ -101,8 +99,13 @@ class User:
             role: The role to grant.
 
         Raises:
+
             RoleAlreadyAssigned: If the user already has the role.
+            DeactivatedUser: If the user is not active.
         """
+
+        self._ensure_active()
+
         if role in self._roles:
             raise RoleAlreadyAssigned('User already has this role')
 
