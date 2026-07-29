@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Any
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 import time_machine
@@ -55,7 +55,7 @@ def test_changing_roles_property_doesnt_affect_user_roles(
 
 
 def test_init_with_empty_roles_raises_error(valid_user_data) -> None:
-    user_data = {**valid_user_data, 'roles': set()}
+    user_data = {**valid_user_data, 'roles': set(), 'id': uuid4()}
 
     with pytest.raises(UserMustHaveAtLeastOneRole):
         # pyrefly: ignore [bad-argument-type]
@@ -122,7 +122,6 @@ def test_hash_returns_current_user_id(valid_user_data) -> None:
     [
         lambda u: u.update_full_name('new name'),
         lambda u: u.update_email('new_email'),
-        lambda u: u.update_password_hash('new_password_hash'),
     ],
 )
 def test_updating_inactive_user_data_raises_error(
@@ -133,6 +132,14 @@ def test_updating_inactive_user_data_raises_error(
 
     with pytest.raises(DeactivatedUser):
         actions(user)
+
+
+def test_password_can_be_changed_on_deactivated_user(valid_user_data) -> None:
+    user: User = make_user(valid_user_data)
+    user.deactivate()
+    user.update_password_hash('new_password_hash')
+
+    assert user.password_hash == 'new_password_hash'
 
 
 def test__touch_updates_updated_at(valid_user_data) -> None:
@@ -156,14 +163,21 @@ def test_revoke_role_works_on_deactivated_user(valid_user_data) -> None:
 
 
 def test_users_with_same_id_are_equal(valid_user_data) -> None:
-    user: User = User(**valid_user_data)
-    same_id_user: User = User(**{**valid_user_data, 'full_name': 'Other Name'})
+    user_id: UUID = uuid4()
+    # pyrefly: ignore [bad-argument-type]
+    user: User = User(**{**valid_user_data, 'id': user_id})
+    same_id_user: User = User(
+        # pyrefly: ignore [bad-argument-type]
+        **{**valid_user_data, 'full_name': 'Other Name', 'id': user_id}
+    )
 
     assert user == same_id_user
 
 
 def test_users_with_different_id_are_not_equal(valid_user_data) -> None:
-    user: User = User(**valid_user_data)
+    # pyrefly: ignore [bad-argument-type]
+    user: User = User(**{**valid_user_data, 'id': uuid4()})
+    # pyrefly: ignore [bad-argument-type]
     other_user: User = User(**{**valid_user_data, 'id': uuid4()})
 
     assert user != other_user

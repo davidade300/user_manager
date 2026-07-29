@@ -159,13 +159,13 @@ class User:
     def update_password_hash(self, new_password_hash: str) -> None:
         """Update the user's password hash and mark the object as updated.
 
+        Unlike the profile updates, this is NOT guarded by ``is_active``: a
+        password must be changeable even on a deactivated account (e.g. an
+        admin resetting a compromised password before reactivating it).
+
         Args:
             new_password_hash: The new hashed password to set for the user.
-
-        Raises:
-            DeactivatedUser: If the user is not active.
         """
-        self._ensure_active()
         self.password_hash = new_password_hash
         self._touch()
 

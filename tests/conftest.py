@@ -11,7 +11,7 @@ from user_manager.core.domain.user_role import UserRole
 @pytest.fixture
 def valid_user_data() -> dict[str, Any]:
     return {
-        'id': uuid4(),
+        # 'id': uuid4(),
         'full_name': 'Test User',
         'user_name': 'fake_user_name',
         'email': 'fakemail@mail.com',
@@ -22,3 +22,15 @@ def valid_user_data() -> dict[str, Any]:
         'updated_at': datetime(2026, 7, 24, tzinfo=timezone.utc),
         'roles': {UserRole.USER},
     }
+
+
+@pytest.fixture
+def admin_user() -> User:
+    return User.create(
+        full_name='Admin da silva',
+        user_name='Adm',
+        email='Admin@mail.com',
+        date_of_birth=date(2000, 8, 7),
+        password_hash='fake_admin_password_hash',
+        roles={UserRole.ADMIN},
+    )
