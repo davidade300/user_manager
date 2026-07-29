@@ -20,3 +20,15 @@ class DeactivatedUser(DomainException):
 
 class InsufficientPrivileges(DomainException):
     pass
+
+
+class EmailAlreadyInUse(DomainException):
+    pass
+
+
+class UsernameAlreadyInUse(DomainException):
+    pass
+
+
+class InvalidCredentials(DomainException):
+    pass

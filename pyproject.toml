@@ -36,4 +36,4 @@ omit = [
 
 [tool.pyrefly]
 search-path = ["."]
-project_ncludes = ["."]
+project_includes = ["."]
