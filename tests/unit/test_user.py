@@ -219,3 +219,47 @@ def test_creating_user_with_invalid_email_raises_error(valid_user_data) -> None:
             date_of_birth=valid_user_data['date_of_birth'],
             password_hash=valid_user_data['password_hash'],
         )
+
+
+def test_comparing_users_with_different_types_raises_error(
+    valid_user_data,
+) -> None:
+    user: User = make_user(valid_user_data)
+
+    with pytest.raises(TypeError):
+        assert user == 1
+
+
+def test_update_email_also_updates_updated_at(valid_user_data) -> None:
+    user: User = make_user(valid_user_data)
+    traveller = time_machine.travel(
+        datetime(2026, 7, 25, tzinfo=timezone.utc), tick=False
+    )
+    with traveller:
+        user.update_email('new_email@mail.com')
+
+    assert user.updated_at.timestamp() == traveller.destination_timestamp
+    assert user.email == 'new_email@mail.com'
+
+
+def test_update_full_name_also_updates_updated_at(valid_user_data) -> None:
+    user: User = make_user(valid_user_data)
+    traveller = time_machine.travel(
+        datetime(2026, 7, 25, tzinfo=timezone.utc), tick=False
+    )
+
+    with traveller:
+        user.update_full_name('new name')
+
+    assert user.updated_at.timestamp() == traveller.destination_timestamp
+    assert user.full_name == 'new name'
+
+
+def test_creating_user_created_at_field_is_now(valid_user_data) -> None:
+    traveller = time_machine.travel(
+        datetime(2026, 7, 25, tzinfo=timezone.utc), tick=False
+    )
+    with traveller:
+        user: User = make_user(valid_user_data)
+
+    assert user.created_at.timestamp() == traveller.destination_timestamp

@@ -196,7 +196,7 @@ class User:
             ``NotImplemented`` if ``other`` is not a ``User``.
         """
         if not isinstance(other, User):
-            return NotImplemented
+            raise TypeError('comparison between different types')
         return self.id == other.id
 
     def __hash__(self) -> int:
