@@ -41,6 +41,8 @@ class CreateUserUseCase(Protocol):
 
         Raises:
             InsufficientPrivileges: If the actor is not an admin.
+            InvalidUsername: If the username is empty or blank.
+            InvalidEmail: If the email is empty or blank.
             UsernameAlreadyInUse: If the username is already taken.
             EmailAlreadyInUse: If the email is already used by another user.
         """
@@ -200,6 +202,8 @@ class RegisterUserUseCase(Protocol):
             The created ``User`` domain entity.
 
         Raises:
+            InvalidUsername: If the username is empty or blank.
+            InvalidEmail: If the email is empty or blank.
             UsernameAlreadyInUse: If the username is already taken.
             EmailAlreadyInUse: If the email is already used by another user.
         """
