@@ -16,7 +16,7 @@ def test_register_create_active_user_with_default_role(valid_user_data) -> None:
     password_hasher = FakePasswordHasher()
     use_case = RegisterUser(user_repo, password_hasher)
 
-    created: User = use_case.execute(
+    registered: User = use_case.execute(
         full_name=valid_user_data['full_name'],
         user_name=valid_user_data['user_name'],
         email=valid_user_data['email'],
@@ -24,10 +24,10 @@ def test_register_create_active_user_with_default_role(valid_user_data) -> None:
         password='password123',
     )
 
-    assert created.is_active is True
-    assert user_repo.memory[created.id] == created
-    assert created.password_hash == password_hasher.hash('password123')
-    assert created.roles == {UserRole.USER}
+    assert registered.is_active is True
+    assert user_repo.memory[registered.id] == registered
+    assert registered.password_hash == password_hasher.hash('password123')
+    assert registered.roles == {UserRole.USER}
 
 
 def test_register_user_with_already_existing_user_name_raises_error(
