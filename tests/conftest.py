@@ -34,3 +34,14 @@ def admin_user() -> User:
         password_hash='fake_admin_password_hash',
         roles={UserRole.ADMIN},
     )
+
+
+@pytest.fixture
+def regular_user() -> User:
+    return User.create(
+        full_name='Usuario da Silva',
+        user_name='Silva_3000',
+        email='silva@mail.com',
+        date_of_birth=date(2008, 1, 1),
+        password_hash='senha_da_silva',
+    )
