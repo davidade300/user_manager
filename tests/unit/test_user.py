@@ -7,6 +7,8 @@ import time_machine
 
 from user_manager.core.domain.exceptions import (
     DeactivatedUser,
+    InvalidEmail,
+    InvalidUsername,
     RoleAlreadyAssigned,
     RoleNotAssigned,
     UserMustHaveAtLeastOneRole,
@@ -193,3 +195,27 @@ def test_is_admin_false_when_user_lacks_admin_role(valid_user_data) -> None:
     user: User = make_user(valid_user_data)
 
     assert user.is_admin() is False
+
+
+def test_creating_user_with_empty_user_name_raises_error(
+    valid_user_data,
+) -> None:
+    with pytest.raises(InvalidUsername):
+        User.create(
+            full_name=valid_user_data['full_name'],
+            user_name='',
+            email=valid_user_data['email'],
+            date_of_birth=valid_user_data['date_of_birth'],
+            password_hash=valid_user_data['password_hash'],
+        )
+
+
+def test_creating_user_with_invalid_email_raises_error(valid_user_data) -> None:
+    with pytest.raises(InvalidEmail):
+        User.create(
+            full_name=valid_user_data['full_name'],
+            user_name=valid_user_data['user_name'],
+            email='',
+            date_of_birth=valid_user_data['date_of_birth'],
+            password_hash=valid_user_data['password_hash'],
+        )

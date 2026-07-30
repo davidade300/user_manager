@@ -3,6 +3,8 @@ from uuid import UUID, uuid4
 
 from user_manager.core.domain.exceptions import (
     DeactivatedUser,
+    InvalidEmail,
+    InvalidUsername,
     RoleAlreadyAssigned,
     RoleNotAssigned,
     UserMustHaveAtLeastOneRole,
@@ -32,9 +34,23 @@ class User:
         updated_at: datetime,
         roles: set[UserRole],
     ) -> None:
+        """Reconstitute a ``User`` from complete data (e.g. the DB mapper).
+
+        Prefer the ``create`` factory for new users; this constructor takes
+        every field as-is and only enforces the entity's invariants.
+
+        Raises:
+            InvalidUsername: If the username is empty or blank.
+            InvalidEmail: If the email is empty or blank.
+            UserMustHaveAtLeastOneRole: If ``roles`` is empty.
+        """
         self.id = id
         self.full_name = full_name
+        if not user_name or user_name.isspace():
+            raise InvalidUsername('user_name must be provided')
         self.user_name = user_name
+        if not email or email.isspace():
+            raise InvalidEmail('email must be provided')
         self.email = email
         self.date_of_birth = date_of_birth
         self.password_hash = password_hash
@@ -224,6 +240,7 @@ class User:
             A new active ``User`` instance.
         """
         now: datetime = datetime.now(tz=timezone.utc)
+
         return cls(
             id=uuid4(),
             full_name=full_name,

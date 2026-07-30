@@ -32,3 +32,11 @@ class UsernameAlreadyInUse(DomainException):
 
 class InvalidCredentials(DomainException):
     pass
+
+
+class InvalidUsername(DomainException):
+    pass
+
+
+class InvalidEmail(DomainException):
+    pass
