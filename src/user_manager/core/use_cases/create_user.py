@@ -47,7 +47,7 @@ class CreateUser(CreateUserUseCase):
 
         hashed_password: str = self.password_hasher.hash(password)
         user: User = User.create(
-            full_name, user_name, email, date_of_birth, hashed_password
+            full_name, user_name, email, date_of_birth, hashed_password, roles
         )
         self.repository.save(user)
         return user
