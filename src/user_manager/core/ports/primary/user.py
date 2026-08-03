@@ -2,6 +2,7 @@ from datetime import date
 from typing import Protocol
 from uuid import UUID
 
+from user_manager.core.domain.auth_result import AuthResult
 from user_manager.core.domain.user import User
 from user_manager.core.domain.user_role import UserRole
 
@@ -206,5 +207,63 @@ class RegisterUserUseCase(Protocol):
             InvalidEmail: If the email is empty or blank.
             UsernameAlreadyInUse: If the username is already taken.
             EmailAlreadyInUse: If the email is already used by another user.
+        """
+        ...
+
+
+class AuthenticateUserUseCase(Protocol):
+    """Primary port for authenticating a user and issuing an access token.
+
+    Public (unauthenticated): verifies the username/password pair (reusing the
+    credential check) and, on success, issues an access token via the
+    ``TokenIssuer`` port. Returns both the user and the token, so the caller can
+    carry the token on later requests and read the user's data without a second
+    round-trip. This is the JWT-style login; per-request schemes such as Basic
+    Auth use ``VerifyCredentialsUseCase`` instead.
+    """
+
+    def execute(self, user_name: str, password: str) -> AuthResult:
+        """Authenticate a user and return the user together with a token.
+
+        Args:
+            user_name: The username used for login.
+            password: The plain-text password, checked against the stored hash.
+
+        Returns:
+            An ``AuthResult`` bundling the authenticated ``User`` and the issued
+            access token.
+
+        Raises:
+            InvalidCredentials: If the username is unknown or the password does
+                not match. The same exception is raised in both cases so callers
+                cannot tell which failed (avoids user enumeration).
+        """
+        ...
+
+
+class VerifyCredentialsUseCase(Protocol):
+    """Primary port for verifying a user's credentials without issuing a token.
+
+    Public (unauthenticated): looks the user up by username via the
+    ``UserRepository`` and checks the plain-text password against the stored
+    hash via the ``PasswordHasher`` port. Used for per-request schemes such as
+    HTTP Basic Auth and for step-up re-authentication. Returns the ``User`` so
+    the caller can read its roles for authorization.
+    """
+
+    def execute(self, user_name: str, password: str) -> User:
+        """Verify a username/password pair and return the matching user.
+
+        Args:
+            user_name: The username used for login.
+            password: The plain-text password, checked against the stored hash.
+
+        Returns:
+            The authenticated ``User`` domain entity.
+
+        Raises:
+            InvalidCredentials: If the username is unknown or the password does
+                not match. The same exception is raised in both cases so callers
+                cannot tell which failed (avoids user enumeration).
         """
         ...
