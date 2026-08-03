@@ -13,11 +13,25 @@ from user_manager.core.ports.secondary.user_repository import UserRepository
 
 
 class CreateUser(CreateUserUseCase):
+    """Concrete implementation of the ``CreateUserUseCase`` port.
+
+    Admin-only creation: authorizes the actor (must be an admin), enforces
+    email and username uniqueness via the ``UserRepository``, hashes the
+    password via the ``PasswordHasher`` port, creates the user with the given
+    roles (defaulting to ``{UserRole.USER}``), persists it, and returns it.
+    """
+
     def __init__(
         self,
         repository: UserRepository,
         password_hasher: PasswordHasher,
     ) -> None:
+        """Initialize the use case with its collaborators.
+
+        Args:
+            repository: Port used to check uniqueness and persist the user.
+            password_hasher: Port used to hash the plain-text password.
+        """
         self.repository = repository
         self.password_hasher = password_hasher
 
@@ -31,6 +45,14 @@ class CreateUser(CreateUserUseCase):
         password: str,
         roles: set[UserRole] | None = None,
     ) -> User:
+        """Create a new user with the given details, if the actor is an admin.
+
+        The full contract (parameters, return value, and raised exceptions) is
+        defined on the ``CreateUserUseCase`` port. This implementation
+        authorizes the actor, checks email then username uniqueness, hashes the
+        password, builds the user via ``User.create`` (with the given roles),
+        persists it, and returns it.
+        """
         if not actor.is_admin():
             raise InsufficientPrivileges(
                 f'User {actor.user_name} lacks the privileges to execute this action.'
