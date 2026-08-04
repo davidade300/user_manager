@@ -40,11 +40,21 @@ class TestUpdateUserFullName:
         )
 
     def test_regular_user_cant_update_others_full_name(
-        self, regular_user, user_repository, admin_user, update_user_full_name
+        self, regular_user, admin_user, update_user_full_name
     ) -> None:
         with pytest.raises(InsufficientPrivileges):
             update_user_full_name.execute(
                 actor=regular_user,
                 user_id=admin_user.id,
+                new_full_name='new_name',
+            )
+
+    def test_cant_update_full_name_passing_wrong_user_id(
+        self, regular_user, update_user_full_name
+    ) -> None:
+        with pytest.raises(InsufficientPrivileges):
+            update_user_full_name.execute(
+                actor=regular_user,
+                user_id=123456789,
                 new_full_name='new_name',
             )
