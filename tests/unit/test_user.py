@@ -152,7 +152,9 @@ def test__touch_updates_updated_at(valid_user_data) -> None:
     with traveller:
         user.grant_role(UserRole.ADMIN)
 
-    assert user.updated_at.timestamp() == traveller.destination_timestamp
+    assert user.updated_at == datetime.fromtimestamp(
+        traveller.destination_timestamp_ns / 1e9, timezone.utc
+    )
 
 
 def test_revoke_role_works_on_deactivated_user(valid_user_data) -> None:
@@ -238,7 +240,9 @@ def test_update_email_also_updates_updated_at(valid_user_data) -> None:
     with traveller:
         user.update_email('new_email@mail.com')
 
-    assert user.updated_at.timestamp() == traveller.destination_timestamp
+    assert user.updated_at == datetime.fromtimestamp(
+        traveller.destination_timestamp_ns / 1e9, timezone.utc
+    )
     assert user.email == 'new_email@mail.com'
 
 
@@ -251,7 +255,9 @@ def test_update_full_name_also_updates_updated_at(valid_user_data) -> None:
     with traveller:
         user.update_full_name('new name')
 
-    assert user.updated_at.timestamp() == traveller.destination_timestamp
+    assert user.updated_at == datetime.fromtimestamp(
+        traveller.destination_timestamp_ns / 1e9, timezone.utc
+    )
     assert user.full_name == 'new name'
 
 
@@ -262,4 +268,6 @@ def test_creating_user_created_at_field_is_now(valid_user_data) -> None:
     with traveller:
         user: User = make_user(valid_user_data)
 
-    assert user.created_at.timestamp() == traveller.destination_timestamp
+    assert user.created_at == datetime.fromtimestamp(
+        traveller.destination_timestamp_ns / 1e9, timezone.utc
+    )
