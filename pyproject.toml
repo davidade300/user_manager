@@ -8,10 +8,6 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "pytest (>=9.1.1,<10.0.0)",
-    "time-machine (>=3.2.0,<4.0.0)",
-    "pytest-cov (>=7.1.0,<8.0.0)",
-    "pyrefly (>=0.60.0)",
 ]
 
 [tool.poetry]
@@ -37,3 +33,11 @@ omit = [
 [tool.pyrefly]
 search-path = ["src", "tests"]
 project_includes = ["src", "tests"]
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.1.1,<10.0.0)",
+    "pytest-cov (>=7.1.0,<8.0.0)",
+    "time-machine (>=3.3.1,<4.0.0)",
+    "pyrefly (>=1.2.0,<2.0.0)"
+]
