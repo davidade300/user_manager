@@ -1,10 +1,27 @@
+from dataclasses import dataclass
 from datetime import date
 from typing import Protocol
 from uuid import UUID
 
-from user_manager.core.domain.auth_result import AuthResult
 from user_manager.core.domain.user import User
 from user_manager.core.domain.user_role import UserRole
+
+
+@dataclass(frozen=True)
+class AuthResult:
+    """Outcome of a successful authentication.
+
+    Value object bundling the authenticated user with the access token issued
+    for them, so a caller gets both the credential to carry on later requests
+    and the user's data without a second round-trip.
+
+    Attributes:
+        user: The authenticated ``User`` entity.
+        access_token: The signed access token issued for the user.
+    """
+
+    user: User
+    access_token: str
 
 
 class CreateUserUseCase(Protocol):
