@@ -86,6 +86,7 @@ class UpdateUserFullNameUseCase(Protocol):
         Raises:
             InsufficientPrivileges: If the actor is neither an admin nor the
                 target user.
+            UserNotFound: If no user has the given id.
             DeactivatedUser: If the user is not active.
         """
         ...
@@ -113,6 +114,7 @@ class UpdateUserEmailUseCase(Protocol):
             InsufficientPrivileges: If the actor is neither an admin nor the
                 target user.
             EmailAlreadyInUse: If the email is already used by another user.
+            UserNotFound: If no user has the given id.
             DeactivatedUser: If the user is not active.
         """
         ...
