@@ -40,3 +40,7 @@ class InvalidUsername(DomainException):
 
 class InvalidEmail(DomainException):
     pass
+
+
+class UserNotFound(DomainException):
+    pass
