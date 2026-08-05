@@ -223,13 +223,12 @@ def test_creating_user_with_invalid_email_raises_error(valid_user_data) -> None:
         )
 
 
-def test_comparing_users_with_different_types_raises_error(
+def test_user_is_not_equal_to_different_type(
     valid_user_data,
 ) -> None:
     user: User = make_user(valid_user_data)
 
-    with pytest.raises(TypeError):
-        assert user == 1
+    assert user != 1
 
 
 def test_update_email_also_updates_updated_at(valid_user_data) -> None:
