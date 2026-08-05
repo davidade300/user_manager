@@ -1,7 +1,7 @@
 import pytest
 
 from user_manager.core.domain.exceptions import InsufficientPrivileges
-from user_manager.core.use_cases.update_full_name import UpdateUserFullName
+from user_manager.core.use_cases.update_user_full_name import UpdateUserFullName
 
 
 @pytest.fixture
