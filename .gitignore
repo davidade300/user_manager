@@ -167,3 +167,4 @@ cython_debug/
 
 *.bkp
 xml_files
+app_docs
