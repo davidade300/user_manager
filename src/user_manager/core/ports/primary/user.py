@@ -260,7 +260,7 @@ class AuthenticateUserUseCase(Protocol):
         ...
 
 
-class VerifyCredentialsUseCase(Protocol):
+class VerifyUserCredentialsUseCase(Protocol):
     """Primary port for verifying a user's credentials without issuing a token.
 
     Public (unauthenticated): looks the user up by username via the
