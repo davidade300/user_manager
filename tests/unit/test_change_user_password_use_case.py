@@ -2,7 +2,10 @@ from uuid import uuid4
 
 import pytest
 
-from user_manager.core.domain.exceptions import InsufficientPrivileges
+from user_manager.core.domain.exceptions import (
+    InsufficientPrivileges,
+    InvalidCredentials,
+)
 from user_manager.core.domain.user import User
 from user_manager.core.use_cases.change_user_password import ChangeUserPassword
 
@@ -71,5 +74,21 @@ class TestChangeUserPassword:
                 actor=regular_user,
                 user_id=uuid4(),
                 current_password='senha_da_silva',
+                new_password='1234',
+            )
+
+    def test_cant_change_if_current_password_doesnt_match(
+        self,
+        regular_user,
+        user_repository,
+        change_user_password,
+    ) -> None:
+        user_repository.save(regular_user)
+
+        with pytest.raises(InvalidCredentials):
+            change_user_password.execute(
+                actor=regular_user,
+                user_id=regular_user.id,
+                current_password='senha_da_silva_errada',
                 new_password='1234',
             )
