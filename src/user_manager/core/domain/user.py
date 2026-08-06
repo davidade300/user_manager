@@ -44,19 +44,19 @@ class User:
             InvalidEmail: If the email is empty or blank.
             UserMustHaveAtLeastOneRole: If ``roles`` is empty.
         """
-        self.id = id
-        self.full_name = full_name
+        self.id: UUID = id
+        self.full_name: str = full_name
         if not user_name or user_name.isspace():
             raise InvalidUsername('user_name must be provided')
-        self.user_name = user_name
+        self.user_name: str = user_name
         if not email or email.isspace():
             raise InvalidEmail('email must be provided')
-        self.email = email
-        self.date_of_birth = date_of_birth
-        self.password_hash = password_hash
-        self.is_active = is_active
+        self.email: str = email
+        self.date_of_birth: date = date_of_birth
+        self.password_hash: str = password_hash
+        self.is_active: bool = is_active
         self._created_at: datetime = created_at
-        self.updated_at = updated_at
+        self.updated_at: datetime = updated_at
         if not roles:
             raise UserMustHaveAtLeastOneRole('User must have at least one role')
         self._roles: set[UserRole] = set(roles)
