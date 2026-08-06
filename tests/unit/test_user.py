@@ -139,7 +139,7 @@ def test_updating_inactive_user_data_raises_error(
 def test_password_can_be_changed_on_deactivated_user(valid_user_data) -> None:
     user: User = make_user(valid_user_data)
     user.deactivate()
-    user.update_password_hash('new_password_hash')
+    user.change_password_hash('new_password_hash')
 
     assert user.password_hash == 'new_password_hash'
 

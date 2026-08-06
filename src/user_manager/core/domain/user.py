@@ -172,8 +172,8 @@ class User:
         self.email = new_email
         self._touch()
 
-    def update_password_hash(self, new_password_hash: str) -> None:
-        """Update the user's password hash and mark the object as updated.
+    def change_password_hash(self, new_password_hash: str) -> None:
+        """Change the user's password hash and mark the object as updated.
 
         Unlike the profile updates, this is NOT guarded by ``is_active``: a
         password must be changeable even on a deactivated account (e.g. an

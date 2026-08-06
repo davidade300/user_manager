@@ -62,5 +62,5 @@ class ChangeUserPassword(ChangeUserPasswordUseCase):
         ):
             raise InvalidCredentials('Current password is incorrect')
 
-        user.update_password_hash(self.password_hasher.hash(new_password))
+        user.change_password_hash(self.password_hasher.hash(new_password))
         self.user_repository.save(user)
