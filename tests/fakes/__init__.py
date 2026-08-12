@@ -2,6 +2,7 @@ from uuid import UUID
 
 from user_manager.core.domain.user import User
 from user_manager.core.ports.secondary.password_hasher import PasswordHasher
+from user_manager.core.ports.secondary.token_issuer import TokenIssuer
 from user_manager.core.ports.secondary.user_repository import UserRepository
 
 
@@ -34,3 +35,8 @@ class FakePasswordHasher(PasswordHasher):
 
     def verify(self, password: str, password_hash: str) -> bool:
         return password_hash == self.hash(password)
+
+
+class FakeTokenIssuer(TokenIssuer):
+    def issue(self, user: User) -> str:
+        return f'sub:{user.id}, roles:{[role.value for role in user.roles]}'
