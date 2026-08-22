@@ -2,7 +2,12 @@ from datetime import date, datetime, timezone
 from typing import Any
 
 import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.future import Engine
+from sqlalchemy.orm import sessionmaker
 
+from user_manager.adapters.secondary.persistence.models import Base
+from user_manager.config import Settings
 from user_manager.core.domain.user import User
 from user_manager.core.domain.user_role import UserRole
 from user_manager.core.ports.secondary.password_hasher import PasswordHasher
@@ -57,3 +62,19 @@ def user_repository() -> UserRepository:
 @pytest.fixture
 def password_hasher() -> PasswordHasher:
     return FakePasswordHasher()
+
+
+@pytest.fixture
+def db_session():
+    engine: Engine = create_engine(
+        url=Settings.TEST_DATABASE_URL,
+        connect_args={'check_same_thread': False},
+    )
+    Base.metadata.create_all(engine)
+    session = sessionmaker(
+        bind=engine,
+        autoflush=True,
+    )()
+    yield session
+    session.close()
+    engine.dispose()

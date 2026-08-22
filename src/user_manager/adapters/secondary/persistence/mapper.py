@@ -52,6 +52,7 @@ def user_model_to_user(user_model: UserModel) -> User:
     Returns:
         The equivalent domain ``User`` entity.
     """
+
     return User(
         id=user_model.id,
         email=user_model.email,
