@@ -10,7 +10,8 @@ class FakeUserRepository(UserRepository):
     def __init__(self) -> None:
         self.memory: dict[UUID, User] = {}
 
-    def get_by_id(self, user_id: UUID) -> User | None:
+    def get_by_id(self, user_id: UUID) -> User:
+        # pyrefly: ignore [bad-return]
         return self.memory.get(user_id)
 
     def get_by_email(self, email: str) -> User | None:
@@ -28,6 +29,11 @@ class FakeUserRepository(UserRepository):
     def save(self, user: User) -> None:
         self.memory[user.id] = user
 
+    def exists_by_email(self, email: str) -> bool:
+        return self.get_by_email(email) is not None
+
+    def exists_by_user_name(self, user_name: str) -> bool:
+        return self.get_by_username(user_name) is not None
 
 class FakePasswordHasher(PasswordHasher):
     def hash(self, password: str) -> str:

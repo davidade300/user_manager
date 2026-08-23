@@ -57,3 +57,7 @@ class InvalidEmail(DomainException):
 
 class UserNotFound(DomainException):
     """Raised when no user matches the given identifier."""
+
+
+class UserAlreadyExists(DomainException):
+    """Raised when a user with the same email or username already exists."""

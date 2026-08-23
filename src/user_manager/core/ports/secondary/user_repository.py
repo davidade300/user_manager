@@ -12,7 +12,7 @@ class UserRepository(Protocol):
     between the two is the adapter's responsibility (via its mapper).
     """
 
-    def get_by_id(self, user_id: UUID) -> User | None:
+    def get_by_id(self, user_id: UUID) -> User:
         """get a user by its id.
 
         Args:
@@ -55,3 +55,7 @@ class UserRepository(Protocol):
             user: The domain ``User`` entity to persist.
         """
         ...
+
+    def exists_by_email(self, email: str) -> bool: ...
+
+    def exists_by_user_name(self, user_name: str) -> bool: ...

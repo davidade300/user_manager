@@ -46,14 +46,15 @@ class RegisterUser(RegisterUserUseCase):
         email then username uniqueness, hashes the password, builds the user
         via ``User.create``, persists it, and returns it.
         """
-        if self.repository.get_by_email(email) is not None:
-            raise EmailAlreadyInUse(
-                f'A user with email {email} already exists.'
-            )
 
-        if self.repository.get_by_username(user_name) is not None:
+        if self.repository.exists_by_user_name(user_name):
             raise UsernameAlreadyInUse(
                 f'A user with username {user_name} already exists.'
+            )
+
+        if self.repository.exists_by_email(email):
+            raise EmailAlreadyInUse(
+                f'A user with email {email} already exists.'
             )
 
         hashed_password: str = self.password_hasher.hash(password)

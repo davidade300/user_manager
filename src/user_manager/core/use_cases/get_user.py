@@ -21,16 +21,17 @@ class GetUser(GetUserUseCase):
         """
         self.repository = repository
 
-    def execute(self, actor: User, user_id: UUID) -> User | None:
+    def execute(self, actor: User, user_id: UUID) -> User:
         """Retrieve a user by id after authorizing the actor.
 
         The full contract (parameters, return value, and raised exceptions) is
         defined on the ``GetUserUseCase`` port. This implementation authorizes
         the actor (must be an admin or the target user), then returns the
-        repository lookup by id (``None`` if no such user exists).
+        repository lookup by id or raises ``UserNotFound``.
         """
         if actor.id != user_id and not actor.is_admin():
             raise InsufficientPrivileges(
                 f'User {actor.user_name} lacks the privileges to execute this operation'
             )
+
         return self.repository.get_by_id(user_id)
