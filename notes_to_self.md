@@ -67,13 +67,14 @@
 
 ### Adapters de segurança (`adapters/secondary/security`) — completo
 
+- Um arquivo por adapter (`password_hasher.py`, `token_issuer.py`), espelhando `core/ports/secondary`; `__init__.py` vazio.
 - `Argon2PasswordHasher` — implementa `PasswordHasher` via `argon2-cffi`.
-- `JwtTokenIssuer` — implementa `TokenIssuer` via `PyJWT`; claims `sub`/`roles`/`iat`/`exp`, secret/algoritmo/expiração vêm de `Settings` (`JWT_SECRET_KEY`, `JWT_ALGORITHM`, `JWT_EXPIRATION_MINUTES`).
+- `JwtTokenIssuer` — implementa `TokenIssuer` via `PyJWT`.
+  - `issue`: claims `sub`/`roles`/`iat`/`exp`, secret/algoritmo/expiração vêm de `Settings` (`JWT_SECRET_KEY`, `JWT_ALGORITHM`, `JWT_EXPIRATION_MINUTES`).
+  - `verify` (porta ganhou o método): decodifica e valida assinatura/expiração, retorna o `UUID` do `sub`; token inválido/adulterado/expirado vira `InvalidCredentials`. Reconstrução do actor (`UserRepository.get_by_id`) fica pro adapter de entrega, não é responsabilidade do `TokenIssuer`.
 - Testes de integração (`tests/integration/test_security.py`) — todos verdes.
 
 ## Falta
-
-- Método de **verificação** de token recebido no `TokenIssuer` (validar request e reconstruir o actor) — ainda não implementado, necessário pro adapter de entrega.
 
 ### Adapter de entrega (primário)
 

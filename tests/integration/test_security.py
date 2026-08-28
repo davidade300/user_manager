@@ -1,5 +1,8 @@
+from datetime import UTC, datetime, timedelta
+
 import jwt
 import pytest
+import time_machine
 
 from user_manager.adapters.secondary.security.password_hasher import (
     Argon2PasswordHasher,
@@ -8,6 +11,7 @@ from user_manager.adapters.secondary.security.token_issuer import (
     JwtTokenIssuer,
 )
 from user_manager.config import Settings
+from user_manager.core.domain.exceptions import InvalidCredentials
 
 
 class TestArgon2PasswordHasher:
@@ -57,4 +61,44 @@ class TestJwtTokenIssuer:
         token = issuer.issue(regular_user)
 
         with pytest.raises(jwt.InvalidSignatureError):
-            jwt.decode(token, 'wrong_secret', algorithms=[Settings.JWT_ALGORITHM])
+            jwt.decode(
+                token, 'wrong_secret', algorithms=[Settings.JWT_ALGORITHM]
+            )
+
+    def test_verify_returns_the_id_of_the_token_subject(
+        self, regular_user
+    ) -> None:
+        issuer = JwtTokenIssuer()
+
+        token = issuer.issue(regular_user)
+
+        assert issuer.verify(token) == regular_user.id
+
+    def test_verify_with_a_tampered_token_raises(self, regular_user) -> None:
+        issuer = JwtTokenIssuer()
+        token = issuer.issue(regular_user)
+
+        with pytest.raises(InvalidCredentials):
+            issuer.verify(f'{token}tampered')
+
+    def test_verify_with_an_expired_token_raises(self, regular_user) -> None:
+        issuer = JwtTokenIssuer()
+        now = datetime(2026, 7, 25, tzinfo=UTC)
+
+        with time_machine.travel(now, tick=False):
+            token = issuer.issue(regular_user)
+
+        past_expiration = now + timedelta(
+            minutes=Settings.JWT_EXPIRATION_MINUTES + 1
+        )
+        with (
+            time_machine.travel(past_expiration, tick=False),
+            pytest.raises(InvalidCredentials),
+        ):
+            issuer.verify(token)
+
+    def test_verify_with_a_malformed_token_raises(self) -> None:
+        issuer = JwtTokenIssuer()
+
+        with pytest.raises(InvalidCredentials):
+            issuer.verify('not_a_token')

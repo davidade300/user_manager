@@ -46,3 +46,7 @@ class FakePasswordHasher(PasswordHasher):
 class FakeTokenIssuer(TokenIssuer):
     def issue(self, user: User) -> str:
         return f'sub:{user.id}, roles:{[role.value for role in user.roles]}'
+
+    def verify(self, token: str) -> UUID:
+        sub = token.split(',')[0].removeprefix('sub:')
+        return UUID(sub)

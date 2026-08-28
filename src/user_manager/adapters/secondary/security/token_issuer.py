@@ -5,10 +5,13 @@ Part of the secondary (driven) security adapter. Wraps ``PyJWT`` behind the
 """
 
 from datetime import UTC, datetime, timedelta
+from typing import Any
+from uuid import UUID
 
 import jwt
 
 from user_manager.config import Settings
+from user_manager.core.domain.exceptions import InvalidCredentials
 from user_manager.core.domain.user import User
 from user_manager.core.ports.secondary.token_issuer import TokenIssuer
 
@@ -34,3 +37,14 @@ class JwtTokenIssuer(TokenIssuer):
             Settings.JWT_SECRET_KEY,
             algorithm=Settings.JWT_ALGORITHM,
         )
+
+    def verify(self, token: str) -> UUID:
+        try:
+            claims: dict[str, Any] = jwt.decode(
+                token,
+                Settings.JWT_SECRET_KEY,
+                algorithms=[Settings.JWT_ALGORITHM],
+            )
+            return UUID(claims['sub'])
+        except (jwt.PyJWTError, KeyError, ValueError) as error:
+            raise InvalidCredentials('Invalid or expired token') from error
